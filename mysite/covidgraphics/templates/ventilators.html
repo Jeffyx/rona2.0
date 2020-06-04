@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <title>COVID-19 in Pennsylvania</title>
+    </head>
+
+    <body class="container">
+        <div class="d-flex flex-row">
+            <div class="col-6">
+                <p class="text-center">People Currently Placed On Ventilation in Pennsylvania</p>
+                <div class="chartOnVentilatorCurrently"></div>
+            </div>
+        </div>
+        <script src="http://d3js.org/d3.v4.min.js"></script> 
+        <script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+        <script>
+            var covidData = "{{ covidDict|safe }}";
+            covidData = covidData.replace(/None/g, 0); // 0 was previously null
+            covidData = covidData.replace(/'/g,'"');
+            var covidObj = JSON.parse(covidData);
+            
+            // People Currently Placed on Ventilation
+            var svgOnVentilatorCurrently = dimple.newSvg(".chartOnVentilatorCurrently", 590, 400);
+            var chartOnVentilatorCurrently = new dimple.chart(svgOnVentilatorCurrently, covidObj);
+            chartOnVentilatorCurrently.setBounds(60, 30, 510, 300);
+            var xAxisOnVentilatorCurrently = chartOnVentilatorCurrently.addTimeAxis("x", "Date", "%Y%m%d", "%B %d");
+            xAxisOnVentilatorCurrently.title = "Date";
+            var yAxisOnVentilatorCurrently = chartOnVentilatorCurrently.addMeasureAxis("y", "On Ventilator Currently");
+            yAxisOnVentilatorCurrently.title = "Use of ventilators per day";
+            chartOnVentilatorCurrently.addSeries(null, dimple.plot.line);
+            chartOnVentilatorCurrently.draw();   
+            
+        </script>
+    </body>
+</html>

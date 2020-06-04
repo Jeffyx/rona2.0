@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <title>COVID-19 in Pennsylvania</title>
+    </head>
+
+    <body class="container">
+        <div class="d-flex flex-row">
+            <div class="col-6">
+                <p class="text-center">Total COVID-19 Deaths in Pennsylvania</p>
+                <div class="chartTotalDeaths"></div>
+            </div>               
+        </div>
+        <script src="http://d3js.org/d3.v4.min.js"></script> 
+        <script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+        <script>
+            var covidData = "{{ covidDict|safe }}";
+            covidData = covidData.replace(/None/g, 0); // 0 was previously null
+            covidData = covidData.replace(/'/g,'"');
+            var covidObj = JSON.parse(covidData);
+            
+            // Total Deaths
+            var svgTotalDeaths = dimple.newSvg(".chartTotalDeaths", 590, 400);
+            var chartTotalDeaths = new dimple.chart(svgTotalDeaths, covidObj);
+            chartTotalDeaths.setBounds(60, 30, 510, 300);
+            var xAxisTotalDeaths = chartTotalDeaths.addTimeAxis("x", "Date", "%Y%m%d", "%B %d");
+            xAxisTotalDeaths.title = "Date";
+            var yAxisTotalDeaths = chartTotalDeaths.addMeasureAxis("y", "Death");
+            yAxisTotalDeaths.title = "Total deaths";
+            chartTotalDeaths.addSeries(null, dimple.plot.line);
+            chartTotalDeaths.draw(); 
+
+            /* Deaths Per Day
+            var svgDeathIncrease = dimple.newSvg(".chartDeathIncrease", 590, 400);
+            var chartDeathIncrease = new dimple.chart(svgDeathIncrease, covidObj);
+            chartDeathIncrease.setBounds(60, 30, 510, 300);
+            var xAxisDeathIncrease = chartDeathIncrease.addTimeAxis("x", "Date", "%Y%m%d", "%B %d");
+            xAxisDeathIncrease.title = "Date";
+            var yAxisDeathIncrease = chartDeathIncrease.addMeasureAxis("y", "Death Increase");
+            yAxisDeathIncrease.title = "Deaths per day";
+            chartDeathIncrease.addSeries(null, dimple.plot.line);
+            chartDeathIncrease.draw();  */
+
+        </script>
+    </body>
+</html>

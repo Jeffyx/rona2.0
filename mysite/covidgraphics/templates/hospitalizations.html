@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <meta charset="UTF-8">
+        <title>COVID-19 in Pennsylvania</title>
+    </head>
+
+    <body class="container">
+        <div class="d-flex flex-row">
+            <div class="col-6">
+                <p class="text-center">Current COVID-19 Hospitalizations in Pennsylvania</p>
+                <div class="chartHospitalizedCurrently"></div>
+            </div>
+        </div>
+        <script src="http://d3js.org/d3.v4.min.js"></script> 
+        <script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+        <script>
+            var covidData = "{{ covidDict|safe }}";
+            covidData = covidData.replace(/None/g, 0); // 0 was previously null
+            covidData = covidData.replace(/'/g,'"');
+            var covidObj = JSON.parse(covidData);
+            
+            // Hospitalized Currently
+            var svgHospitalizedCurrently = dimple.newSvg(".chartHospitalizedCurrently", 590, 400);
+            var chartHospitalizedCurrently = new dimple.chart(svgHospitalizedCurrently, covidObj);
+            chartHospitalizedCurrently.setBounds(60, 30, 510, 300);
+            var xAxisHospitalizedCurrently = chartHospitalizedCurrently.addTimeAxis("x", "Date", "%Y%m%d", "%B %d");
+            xAxisHospitalizedCurrently.title = "Date";
+            var yAxisHospitalizedCurrently = chartHospitalizedCurrently.addMeasureAxis("y", "Hospitalized Currently");
+            yAxisHospitalizedCurrently.title = "Hospitalizations per day";
+            chartHospitalizedCurrently.addSeries(null, dimple.plot.line);
+            chartHospitalizedCurrently.draw();    
+
+            
+        </script>
+    </body>
+</html>
